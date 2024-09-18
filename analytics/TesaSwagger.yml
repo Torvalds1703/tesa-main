@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  title: Task Planner API
+  description: API для планирования задач и событий
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Локальный сервер
+
+tags:
+  - name: Users
+    description: Управление пользователями
+  - name: Tasks
+    description: Управление задачами
+  - name: Notifications
+    description: Уведомления и напоминания
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Регистрация нового пользователя
+      requestBody:
+        description: Данные для регистрации
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: "password123"
+                full_name:
+                  type: string
+                  example: John Doe
+      responses:
+        '201':
+          description: Успешная регистрация
+        '400':
+          description: Неверные данные
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Вход в систему
+      requestBody:
+        description: Данные для авторизации
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Успешный вход
+        '401':
+          description: Неверные данные авторизации
+
+  /getTasks:
+    get:
+      tags:
+        - Tasks
+      summary: Получение списка задач пользователя
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: "Закончить лабораторную работу"
+                    description:
+                      type: string
+                      example: "Сделать лабораторную по физике"
+                    due_date:
+                      type: string
+                      format: date-time
+                      example: "2024-09-12T10:00:00Z"
+                    priority:
+                      type: integer
+                      example: 1
+                    status:
+                      type: string
+                      example: "in progress"
+        '401':
+          description: Пользователь не авторизован
+
+  /getCurTasks:
+    get:
+      tags:
+        - Tasks
+      summary: Получение конкретной задачи
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Задача получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: "Закончить лабораторную работу"
+                  description:
+                    type: string
+                    example: "Сделать лабораторную по физике"
+                  due_date:
+                    type: string
+                    format: date-time
+                    example: "2024-09-12T10:00:00Z"
+                  priority:
+                    type: integer
+                    example: 1
+                  status:
+                    type: string
+                    example: "in progress"
+        '404':
+          description: Задача не найдена
+
+  /tasks:
+    post:
+      tags:
+        - Tasks
+      summary: Создание новой задачи
+      requestBody:
+        description: Данные новой задачи
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Закончить лабораторную работу"
+                description:
+                  type: string
+                  example: "Сделать лабораторную по физике"
+                due_date:
+                  type: string
+                  format: date-time
+                  example: "2024-09-12T10:00:00Z"
+                priority:
+                  type: integer
+                  example: 1
+                category_id:
+                  type: integer
+                  example: 2
+      responses:
+        '201':
+          description: Задача создана
+
+  /updateTasks:
+    put:
+      tags:
+        - Tasks
+      summary: Обновление задачи
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: Данные обновленной задачи
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Закончить лабораторную работу"
+                description:
+                  type: string
+                  example: "Сделать лабораторную по физике"
+                due_date:
+                  type: string
+                  format: date-time
+                  example: "2024-09-12T10:00:00Z"
+                priority:
+                  type: integer
+                  example: 1
+                status:
+                  type: string
+                  example: "in progress"
+      responses:
+        '200':
+          description: Задача обновлена
+        '404':
+          description: Задача не найдена
+
+  /delTasks:
+    delete:
+      tags:
+        - Tasks
+      summary: Удаление задачи
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Задача удалена
+        '404':
+          description: Задача не найдена
+
+  /notifications:
+    post:
+      tags:
+        - Notifications
+      summary: Настройка уведомлений для задачи
+      requestBody:
+        description: Уведомление для задачи
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_id:
+                  type: integer
+                  example: 1
+                remind_at:
+                  type: string
+                  format: date-time
+                  example: "2024-09-11T09:00:00Z"
+                method:
+                  type: string
+                  example: "email"
+      responses:
+        '201':
+          description: Уведомление настроено
+        '400':
+          description: Ошибка в данных
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date-time
+        priority:
+          type: integer
+        status:
+          type: string
+        category_id:
+          type: integer
+        user_id:
+          type: integer
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        full_name:
+          type: string
+        theme:
+          type: string
