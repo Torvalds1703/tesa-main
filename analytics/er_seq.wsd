@@ -1,0 +1,15 @@
+@startuml er_seq
+actor User
+participant Frontend
+participant BFF
+participant Backend
+participant Database
+
+User -> Frontend: Запрос данных
+Frontend -> BFF: Запрос данных
+BFF -> Backend: Запрос данных
+Backend -> Database: Запрос данных
+Database --> Backend: Ответ
+Backend --> Frontend: Ответ
+Frontend --> User: Отображение данных
+@enduml
