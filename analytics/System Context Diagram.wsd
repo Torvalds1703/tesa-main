@@ -1,0 +1,30 @@
+@startuml
+actor User as "Пользователь"
+
+rectangle WebClient as "Веб-клиент (React)" {
+  [Компонент управления задачами]
+  [Компонент управления напоминаниями]
+  [Компонент профиля пользователя]
+}
+
+rectangle BackendAPI as "Сервер (Java Spring)" {
+  [Контроллер задач]
+  [Контроллер напоминаний]
+  [Контроллер аутентификации]
+}
+
+database Database as "PostgreSQL"
+
+actor OAuthProvider as "OAuth (Google, Facebook)"
+actor PushService as "Firebase Cloud Messaging"
+actor CalendarService as "Google Calendar"
+
+User --> WebClient: Использует интерфейс
+WebClient --> BackendAPI: API-запросы
+BackendAPI --> Database: Хранение данных
+
+BackendAPI --> OAuthProvider: Авторизация
+BackendAPI --> EmailService: Уведомления по email
+BackendAPI --> PushService: Push-уведомления
+BackendAPI --> CalendarService: Синхронизация с календарем
+@enduml

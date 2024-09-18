@@ -1,0 +1,77 @@
+@startuml bd
+
+!define Table(x) class x << (T,#FFAAAA) >>
+!define FK(x) class x << (FK,#FFAAAA) >>
+!define PK(x) class x << (PK,#FFAAAA) >>
+
+Table(users) {
+  + users_id : SERIAL <<PK>>
+  + email : VARCHAR(255)
+  + password_hash : VARCHAR(255)
+  + full_name : VARCHAR(255)
+  + created_at : TIMESTAMP
+  + updated_at : TIMESTAMP
+}
+
+Table(tasks) {
+  + tasks_id : SERIAL <<PK>>
+  + title : VARCHAR(255)
+  + description : TEXT
+  + due_date : TIMESTAMP
+  + priority : INT
+  + status : VARCHAR(20)
+  + category_id : INT <<FK>>
+  + user_id : INT <<FK>>
+  + created_at : TIMESTAMP
+  + updated_at : TIMESTAMP
+}
+
+Table(categories) {
+  + categories_id : SERIAL <<PK>>
+  + name : VARCHAR(100)
+  + color : VARCHAR(7)
+}
+
+Table(reminders) {
+  + reminders_id : SERIAL <<PK>>
+  + task_id : INT <<FK>>
+  + remind_at : TIMESTAMP
+  + method : VARCHAR(20)
+  + created_at : TIMESTAMP
+}
+
+Table(messages) {
+  + messages_id : SERIAL <<PK>>
+  + task_id : INT <<FK>>
+  + user_id : INT <<FK>>
+  + content : TEXT
+  + created_at : TIMESTAMP
+}
+
+Table(groups) {
+  + groups_id : SERIAL <<PK>>
+  + name : VARCHAR(255)
+  + created_at : TIMESTAMP
+}
+
+Table(group_members) {
+  + group_members_id : INT <<FK>>
+  + user_id : INT <<FK>>
+  + role : VARCHAR(20)
+}
+
+Table(task_assignees) {
+  + task_assignees_id : INT <<FK>>
+  + user_id : INT <<FK>>
+}
+
+users "1" --> "N" tasks : "created by"
+categories "1" --> "N" tasks : "has"
+tasks "1" --> "N" reminders : "has"
+tasks "1" --> "N" messages : "discussed in"
+groups "1" --> "N" group_members : "contains"
+users "1" --> "N" group_members : "part of"
+tasks "1" --> "N" task_assignees : "assigned to"
+users "1" --> "N" task_assignees : "working on"
+
+@enduml
