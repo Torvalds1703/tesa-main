@@ -35,7 +35,7 @@ paths:
                 password:
                   type: string
                   example: "password123"
-                full_name:
+                fullName:
                   type: string
                   example: John Doe
       responses:
@@ -69,18 +69,43 @@ paths:
         '401':
           description: Неверные данные авторизации
 
+  /profile:
+    post:
+      tags:
+        - Users
+      summary: Обновление профиля пользователя
+      description: Обновляет информацию профиля пользователя.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "student123"
+                email:
+                  type: string
+                  example: "student@example.com"
+      responses:
+        200:
+          description: Профиль успешно обновлен
+        400:
+          description: Неверные данные запроса
+
   /getTasks:
     get:
       tags:
         - Tasks
       summary: Получение списка задач пользователя
       parameters:
-        - name: user_id
+        - name: userId
           in: query
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 5a498320-15de-48b2-b94c-2f5c3a475474
       responses:
         '200':
           description: Список задач
@@ -91,16 +116,16 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
-                      type: integer
-                      example: 1
+                    uid:
+                      type: string
+                      example: 68345748-84f3-42bc-999b-1ec52581a36b
                     title:
                       type: string
                       example: "Закончить лабораторную работу"
                     description:
                       type: string
                       example: "Сделать лабораторную по физике"
-                    due_date:
+                    dueDate:
                       type: string
                       format: date-time
                       example: "2024-09-12T10:00:00Z"
@@ -119,12 +144,12 @@ paths:
         - Tasks
       summary: Получение конкретной задачи
       parameters:
-        - name: task_id
+        - name: taskId
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: f4855910-75a7-4477-aea0-7a6d6f95e26c
       responses:
         '200':
           description: Задача получена
@@ -133,22 +158,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    example: 1
+                  uid:
+                    type: string
+                    example: 8a994792-ae0b-4e8b-9de3-3e82782e171f
                   title:
                     type: string
                     example: "Закончить лабораторную работу"
                   description:
                     type: string
                     example: "Сделать лабораторную по физике"
-                  due_date:
+                  dueDate:
                     type: string
                     format: date-time
                     example: "2024-09-12T10:00:00Z"
                   priority:
-                    type: integer
-                    example: 1
+                    type: string
+                    enum: ["низкий", "средний", "высокий"]
+                    example: "высокий"
                   status:
                     type: string
                     example: "in progress"
@@ -174,14 +200,15 @@ paths:
                 description:
                   type: string
                   example: "Сделать лабораторную по физике"
-                due_date:
+                dueDate:
                   type: string
                   format: date-time
                   example: "2024-09-12T10:00:00Z"
                 priority:
-                  type: integer
-                  example: 1
-                category_id:
+                  type: string
+                  enum: ["низкий", "средний", "высокий"]
+                  example: "высокий"
+                categoryId:
                   type: integer
                   example: 2
       responses:
@@ -194,7 +221,7 @@ paths:
         - Tasks
       summary: Обновление задачи
       parameters:
-        - name: task_id
+        - name: taskId
           in: path
           required: true
           schema:
@@ -214,13 +241,14 @@ paths:
                 description:
                   type: string
                   example: "Сделать лабораторную по физике"
-                due_date:
+                dueDate:
                   type: string
                   format: date-time
                   example: "2024-09-12T10:00:00Z"
                 priority:
-                  type: integer
-                  example: 1
+                  type: string
+                  enum: ["низкий", "средний", "высокий"]
+                  example: "высокий"
                 status:
                   type: string
                   example: "in progress"
@@ -236,7 +264,7 @@ paths:
         - Tasks
       summary: Удаление задачи
       parameters:
-        - name: task_id
+        - name: taskId
           in: path
           required: true
           schema:
@@ -252,6 +280,33 @@ paths:
     post:
       tags:
         - Notifications
+      summary: Создание напоминания
+      description: Создает напоминание для задачи.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskId:
+                  type: string
+                  example: "64f893b6a726b300f437bb6c"
+                notificationTime:
+                  type: string
+                  format: date-time
+                  example: "2024-09-19T09:00:00Z"
+      responses:
+        201:
+          description: Напоминание успешно создано
+        400:
+          description: Неверные данные запроса
+
+
+  /updateNotifications:
+    post:
+      tags:
+        - Notifications
       summary: Настройка уведомлений для задачи
       requestBody:
         description: Уведомление для задачи
@@ -261,10 +316,10 @@ paths:
             schema:
               type: object
               properties:
-                task_id:
-                  type: integer
-                  example: 1
-                remind_at:
+                taskUid:
+                  type: string
+                  example: f4855910-75a7-4477-aea0-7a6d6f95e26c
+                remindAt:
                   type: string
                   format: date-time
                   example: "2024-09-11T09:00:00Z"
@@ -282,32 +337,44 @@ components:
     Task:
       type: object
       properties:
-        id:
-          type: integer
+        uid:
+          type: string
+          example: f4855910-75a7-4477-aea0-7a6d6f95e26c
         title:
           type: string
+          example: "Подготовка к экзамену"
         description:
           type: string
-        due_date:
+          example: "Необходимо выучить главы 1-5 по математике"
+        dueDate:
           type: string
           format: date-time
+          example: "2024-09-20T12:00:00Z"
         priority:
-          type: integer
+          type: string
+          example: высокий
         status:
           type: string
-        category_id:
+          example: "В процессе"
+        categoryId:
           type: integer
-        user_id:
+          example: 2
+        userId:
           type: integer
+          example: 1
 
     User:
       type: object
       properties:
-        id:
-          type: integer
+        uid:
+          type: string
+          example: f4855910-75a7-4477-aea0-7a6d6f95e26c
         email:
           type: string
-        full_name:
+          example: "student@example.com"
+        fullName:
           type: string
+          example: "Иван Иванов"
         theme:
           type: string
+          example: "dark"
