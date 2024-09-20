@@ -100,7 +100,7 @@ paths:
         - Tasks
       summary: Получение списка задач пользователя
       parameters:
-        - name: userId
+        - name: userUid
           in: query
           required: true
           schema:
@@ -144,7 +144,7 @@ paths:
         - Tasks
       summary: Получение конкретной задачи
       parameters:
-        - name: taskId
+        - name: tasUid
           in: path
           required: true
           schema:
@@ -208,7 +208,7 @@ paths:
                   type: string
                   enum: ["низкий", "средний", "высокий"]
                   example: "высокий"
-                categoryId:
+                categoryUid:
                   type: integer
                   example: 2
       responses:
@@ -221,7 +221,7 @@ paths:
         - Tasks
       summary: Обновление задачи
       parameters:
-        - name: taskId
+        - name: taskUid
           in: path
           required: true
           schema:
@@ -264,7 +264,7 @@ paths:
         - Tasks
       summary: Удаление задачи
       parameters:
-        - name: taskId
+        - name: taskUid
           in: path
           required: true
           schema:
@@ -289,7 +289,7 @@ paths:
             schema:
               type: object
               properties:
-                taskId:
+                taskUid:
                   type: string
                   example: "64f893b6a726b300f437bb6c"
                 notificationTime:
@@ -316,7 +316,7 @@ paths:
             schema:
               type: object
               properties:
-                taskUid:
+                taskUUid:
                   type: string
                   example: f4855910-75a7-4477-aea0-7a6d6f95e26c
                 remindAt:
@@ -356,10 +356,10 @@ components:
         status:
           type: string
           example: "В процессе"
-        categoryId:
+        categoryUid:
           type: integer
           example: 2
-        userId:
+        userUid:
           type: integer
           example: 1
 
